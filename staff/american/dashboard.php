@@ -14,17 +14,24 @@ $is_admin = ($_SESSION['role'] === 'admin');
 
 // Initialize search query variable
 $search_query = "";
+$has_search = false; // Track if search has been performed
 
 // Check if the search form has been submitted
 if (isset($_POST['search'])) {
     $search_query = $_POST['search_query'];
-    $sql = "SELECT id, name FROM clients WHERE name LIKE ?";
+    $sql = "SELECT clients.id, clients.name, check_ins.check_in_time, check_ins.check_out_time 
+            FROM clients 
+            LEFT JOIN check_ins ON clients.name = check_ins.name 
+            WHERE clients.name LIKE ?";
     $stmt = $conn->prepare($sql);
     $search_param = "%" . $search_query . "%";
     $stmt->bind_param("s", $search_param);
+    $has_search = true; // Set to true since search has been performed
 } else {
-    // If no search query, fetch all clients
-    $sql = "SELECT id, name FROM clients";
+    // If no search query, fetch all clients with their check-in status
+    $sql = "SELECT clients.id, clients.name, check_ins.check_in_time, check_ins.check_out_time 
+            FROM clients 
+            LEFT JOIN check_ins ON clients.name = check_ins.name";
     $stmt = $conn->prepare($sql);
 }
 
@@ -174,10 +181,17 @@ if (isset($_POST['logout'])) {
         }
         .footer a {
             color: white;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
         .table-responsive {
             max-height: 400px;
             overflow-y: auto;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -189,7 +203,6 @@ if (isset($_POST['logout'])) {
             <a href="check_in_merged.php" class="btn btn-light mx-2 my-1">Check In</a>
             <a href="check_out_merged.php" class="btn btn-light mx-2 my-1">Check Out</a>
             <a href="about.php" class="btn btn-light mx-2 my-1">About us</a>
-            <a href="fetch_data.php" class="btn btn-light mx-2 my-1">Records</a>
             <a href="add_attendance.php" class="btn btn-light mx-2 my-1">Program</a>
         </div>
     </header>
@@ -209,7 +222,8 @@ if (isset($_POST['logout'])) {
                 <button type="submit" name="download_pdf" class="btn btn-primary">Download PDF</button>
             </form>
             <?php endif; ?>
-            <div class="table-responsive">
+            <!-- Table -->
+            <div class="table-responsive <?php echo $has_search ? '' : 'hidden'; ?>">
                 <table class="table table-bordered table-striped bg-white text-dark">
                     <thead>
                         <tr>
@@ -220,18 +234,26 @@ if (isset($_POST['logout'])) {
                     <tbody>
                         <?php
                         while ($row = $result->fetch_assoc()) {
+                            // Determine if the client has checked in
+                            $checked_in = !is_null($row['check_in_time']) && is_null($row['check_out_time']);
+
                             echo "<tr>
                                     <td>" . htmlspecialchars($row['name']) . "</td>
-                                    <td>
-                                        <form method='post' action='' class='d-inline'>
-                                            <input type='hidden' name='check_in_name' value='" . htmlspecialchars($row['name']) . "'>
-                                            <button type='submit' class='btn btn-success btn-sm'>Check In</button>
-                                        </form>
-                                        <form method='post' action='' class='d-inline'>
-                                            <input type='hidden' name='check_out_name' value='" . htmlspecialchars($row['name']) . "'>
-                                            <button type='submit' class='btn btn-danger btn-sm'>Check Out</button>
-                                        </form>
-                                    </td>
+                                    <td>";
+                            if ($checked_in) {
+                                // Show Check-Out button if client has checked in
+                                echo "<form method='post' action='' class='d-inline'>
+                                        <input type='hidden' name='check_out_name' value='" . htmlspecialchars($row['name']) . "'>
+                                        <button type='submit' class='btn btn-danger btn-sm'>Check Out</button>
+                                    </form>";
+                            } else {
+                                // Show Check-In button if client has not checked in
+                                echo "<form method='post' action='' class='d-inline'>
+                                        <input type='hidden' name='check_in_name' value='" . htmlspecialchars($row['name']) . "'>
+                                        <button type='submit' class='btn btn-success btn-sm'>Check In</button>
+                                    </form>";
+                            }
+                            echo "</td>
                                   </tr>";
                         }
                         ?>
@@ -245,7 +267,8 @@ if (isset($_POST['logout'])) {
         </div>
     </section>
     <footer class="footer">
-        <p>&copy; <?php echo date("Y"); ?> American Corner. All rights reserved.</p>
+        <p>&copy; <?php echo date("Y"); ?> Developed by <a href="https://wa.me/0758882563">Pandomi Tech Innovations</a>.</p>
     </footer>
 </body>
 </html>
+

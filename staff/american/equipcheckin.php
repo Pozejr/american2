@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "knls";
+$password = "Knls_2020";
 $dbname = "client_management";
 
 // Create connection
@@ -64,16 +64,52 @@ $conn->close();
     <title>Register and Check-In Equipment</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #242f4b;
+            text-align: center;
+            color: white;
+            padding: 20px 0;
+        }
+        .container {
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 800px;
+            flex: 1;
+        }
+        footer {
+            background-color: #b52233;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .btn-submit {
+            background-color: #242f4b;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
-    <header style="background-color: #242f4b; text-align: center; color: white;">
-        <div class="container">
-            <h1 class="mb-2">AMERICAN CORNER PERSONAL EQUIPMENTS</h1>
-        </div>
+    <header>
+        <h1>AMERICAN CORNER PERSONAL EQUIPMENTS</h1>
+        <a href="dashboard.php" class="btn btn-light mx-2 my-1">HOME</a>
     </header>
 
-    <div class="container mt-5">
+    <div class="container">
         <h1 class="mb-4">Register or Check-In Equipment</h1>
 
         <!-- Equipment Registration/Check-In Form -->
@@ -106,9 +142,14 @@ $conn->close();
                 </div>
                 <button type="button" class="btn btn-secondary" onclick="addEquipment()">Add More Equipment</button>
             </div>
-            <button type="submit" name="register_or_check_in" style="background-color: #242f4b; color: white">Submit</button>
+            <button type="submit" name="register_or_check_in" class="btn btn-submit">Submit</button>
         </form>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; <?php echo date("Y"); ?> <a href="https://wa.me/0758882563" style="color: white;">Pandomi Tech Innovations</a></p>
+    </footer>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

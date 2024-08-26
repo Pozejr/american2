@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About KNLS e-Resource Management System</title>
+    <title>About American Corner Management System</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -48,59 +48,59 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-4">About KNLS e-Resource Management System</h1>
+        <h1 class="mt-4">About American Corner Management System</h1>
         
         <h2>Our Mission</h2>
         <ul>
-            <li>Develop a national policy, legislation, and set norms and standards for the library sector.</li>
-            <li>Provide capacity building and technical assistance to county governments.</li>
-            <li>Carry out and promote research in the development of libraries and related services.</li>
-            <li>Promote literacy throughout the country.</li>
+            <li>Enhance community access to information and resources through technology and innovative solutions.</li>
+            <li>Promote digital literacy and provide training to individuals and organizations.</li>
+            <li>Support the development of local knowledge and skills in various fields.</li>
+            <li>Facilitate access to a wide range of digital resources and tools.</li>
         </ul>
 
         <h2>What We Offer</h2>
 
-        <h3>Extensive Digital Collection</h3>
-        <p>Our e-Resource Management System offers an extensive digital collection, including:</p>
+        <h3>Comprehensive Digital Platform</h3>
+        <p>The American Corner Management System provides a robust digital platform that includes:</p>
         <ul>
-            <li><strong>eBooks:</strong> Access thousands of titles across various genres and subjects.</li>
-            <li><strong>Journals and Articles:</strong> Stay updated with the latest research and scholarly articles.</li>
-            <li><strong>Audiobooks and Videos:</strong> Engage with a variety of multimedia content for all ages.</li>
-            <li><strong>Databases:</strong> Utilize specialized databases for in-depth research and information.</li>
+            <li><strong>Resource Management:</strong> Efficiently manage digital and physical resources within American Corners.</li>
+            <li><strong>Training Programs:</strong> Access and manage training sessions for digital literacy and skill development.</li>
+            <li><strong>Event Management:</strong> Organize and oversee events and activities in American Corners.</li>
+            <li><strong>Reporting Tools:</strong> Generate reports and analyze data related to resource utilization and user engagement.</li>
         </ul>
 
         <h3>User-Friendly Interface</h3>
-        <p>Our platform is designed with you in mind. It features:</p>
+        <p>Our system is designed with a focus on ease of use and accessibility:</p>
         <ul>
-            <li><strong>Easy Navigation:</strong> Find what you need quickly with our intuitive search and browsing tools.</li>
-            <li><strong>Personalized Experience:</strong> Customize your reading lists, bookmarks, and preferences.</li>
-            <li><strong>Accessibility:</strong> Ensuring our resources are available to everyone, including those with disabilities.</li>
+            <li><strong>Intuitive Navigation:</strong> Quickly find the tools and information you need with our streamlined interface.</li>
+            <li><strong>Customizable Features:</strong> Tailor the system to meet the specific needs of your American Corner.</li>
+            <li><strong>Accessible Design:</strong> Ensure that our system is usable by individuals with various abilities and preferences.</li>
         </ul>
 
         <h3>Support and Assistance</h3>
-        <p>We are committed to providing exceptional support to our users. Our services include:</p>
+        <p>We are dedicated to providing exceptional support for users:</p>
         <ul>
-            <li><strong>24/7 Customer Support:</strong> Get help anytime via chat, email, or phone.</li>
-            <li><strong>Guides and Tutorials:</strong> Access comprehensive guides to help you make the most of our resources.</li>
-            <li><strong>Community Engagement:</strong> Join our forums and discussion groups to connect with other learners and readers.</li>
+            <li><strong>Comprehensive Support:</strong> Receive assistance through our helpdesk, email, or phone support.</li>
+            <li><strong>Resource Guides:</strong> Access detailed guides and tutorials to make the most of the system.</li>
+            <li><strong>Community Involvement:</strong> Engage with other American Corners through forums and discussion groups.</li>
         </ul>
 
         <h2>Our Vision</h2>
-        <p>We envision a Kenya where everyone has equal access to knowledge and information. By harnessing the power of technology, we aim to bridge the digital divide and promote lifelong learning for all.</p>
+        <p>Our vision is to empower communities by leveraging technology and innovative solutions to enhance access to information and education. We aim to create an environment where individuals can thrive through enhanced digital capabilities and knowledge sharing.</p>
 
         <h2>Get Started</h2>
-        <p>Embark on your journey of discovery and learning with the KNLS e-Resource Management System. Whether you are a student, researcher, professional, or simply a curious mind, our platform is here to support your educational and informational needs.</p>
+        <p>Join us in transforming community engagement and access to information with the American Corner Management System. Whether you are a librarian, educator, or community leader, our platform is designed to support your efforts in making a positive impact.</p>
 
         <h2>Contact Us</h2>
-        <p>For any inquiries or assistance, please reach out to us at:</p>
+        <p>For further information or support, please contact us:</p>
         <ul>
-            <li><strong>Email:</strong> support@knls.go.ke</li>
-            <li><strong>Phone:</strong> +254 051 216023</li>
-            <li><strong>Address:</strong> Kenya National Library Service, Nakuru, Kenya</li>
+            <li><strong>Email:</strong> kazungu.michael@knls.ac.ke</li>
+            <li><strong>Phone:</strong> +254723869818</li>
+            <li><strong>Address:</strong> KNLS Nakuru 2nd floor</li>
         </ul>
 
         <h2>Acknowledgements</h2>
-        <p>We would like to thank the following individuals for their contributions to the development of this website:</p>
+        <p>We extend our gratitude to the following contributors:</p>
         <ul>
             <li>Paul Omondi - +254 758882563</li>
             <li>Celestino Otieno - +254 714019736</li>
@@ -112,21 +112,19 @@
             <li>Alloycious Kimobo - +254 723254445</li>
             <li>Emmanuel Ngetich - +254 798137697</li>
             <li>Brian Victor - +254 798644485</li>
-            <li>Edward wechuli - +254 768101943</li>
+            <li>Edward Wechuli - +254 768101943</li>
             <li>Winner Mugo - +254 740468758</li>
         </ul>
 
         <hr>
         <div>
             <a href="dashboard.php" class="btn btn-primary">Home</a>
-       </div>
-
+        </div>
 
         <!-- Watermark -->
         <div class="watermark">
-            Developed by KNLS Attachés @ May-August 2024
+            Developed by Pandomi Tech Innovations
         </div>
-       
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -135,3 +133,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+

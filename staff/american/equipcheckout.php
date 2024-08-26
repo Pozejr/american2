@@ -1,59 +1,3 @@
-<?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "client_management";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Initialize variables
-$selected_client_id = '';
-$equipment_result = [];
-
-// Handle form submission for checking out equipment
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['check_out'])) {
-        $client_id = $_POST['client_id'];
-
-        foreach ($_POST['equipment'] as $key => $type) {
-            $serial_number = $_POST['serial_number'][$key];
-            $model = $_POST['model'][$key];
-
-            // Check-out existing equipment
-            $stmt = $conn->prepare("UPDATE equipment SET status = 'checked-out' WHERE client_id = ? AND type = ? AND serial_number = ? AND model = ? AND status = 'available'");
-            if ($stmt) {
-                $stmt->bind_param("ssss", $client_id, $type, $serial_number, $model);
-                $stmt->execute();
-                $stmt->close();
-            } else {
-                die("Statement preparation failed: " . $conn->error);
-            }
-        }
-        $message = "Equipment checked out successfully!";
-        $redirect = true;
-    }
-
-    // Retrieve equipment based on selected client ID
-    if (isset($_POST['client_id_fetch'])) {
-        $selected_client_id = $_POST['client_id_fetch'];
-        $sql = "SELECT id, type, serial_number, model FROM equipment WHERE client_id = ? AND status = 'available'";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $selected_client_id);
-        $stmt->execute();
-        $equipment_result = $stmt->get_result();
-        $stmt->close();
-    }
-}
-
-$conn->close();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,13 +7,43 @@ $conn->close();
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            padding: 30px;
+            background-color: #fff;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+
         .header {
-            background-color: #2D2C8E; /* Header background color */
+            background-color: #242f4b; /* Single color for the entire header */
+            text-align: center;
             color: white;
+            padding: 15px 0;
+        }
+        .header h1 {
+            margin: 0; /* Remove default margin */
+            padding: 10px; /* Padding to match button and make it visually appealing */
+            background-color: #242f4b; /* Same color as header */
+            color: white; /* Text color for header */
+            border-radius: 5px; /* Rounded corners */
         }
         .header .btn-light {
-            background-color: white; /* Button background color */
-            color: black; /* Button text color */
+            background-color: #242f4b; /* Button background color matching header */
+            color: white; /* Button text color */
         }
         .header .btn-light:hover {
             background-color: #1b1a6d; /* Button hover color */
@@ -78,25 +52,26 @@ $conn->close();
         .footer {
             text-align: center;
             padding: 20px 0;
-            background-color: #F48312; /* Bootstrap's primary blue color */
+            background-color: #b52233; /* Updated footer background color */
             color: white;
         }
         .footer a {
-            color: white; /* Ensure icons and email link are visible on blue background */
+            color: white; /* Ensure icons and email link are visible on red background */
+        }
+        .fetch-button {
+            background-color: #242f4b; /* Button background color matching header */
+            color: white; /* Button text color */
+        }
+        .fetch-button:hover {
+            background-color: #1b1a6d; /* Button hover color */
+            color: white;
         }
     </style>
-    <script>
-        function redirectToDashboard() {
-            window.location.href = 'dashboard.php';
-        }
-    </script>
 </head>
 <body>
-    <header class="header p-3 mb-4">
-        <div class="container">
-            <h1 class="mb-2">AMERICAN CORNER PERSONAL EQUIPMENTS</h1>
-            <a href="dashboard.php" class="btn btn-light mx-2 my-1">HOME</a>
-        </div>
+    <header class="header">
+            <h1>American Corner Management System</h1>
+            <a href="dashboard.php" class="btn btn-light">HOME</a>
     </header>
 
     <div class="container mt-5">
@@ -108,7 +83,7 @@ $conn->close();
                 <label for="client_id_fetch">Client ID:</label>
                 <input type="text" id="client_id_fetch" name="client_id_fetch" class="form-control" value="<?php echo htmlspecialchars($selected_client_id); ?>" required>
             </div>
-            <button type="submit" name="fetch_equipment" class="btn btn-primary mt-3">Fetch Equipment</button>
+            <button type="submit" name="fetch_equipment" class="btn fetch-button mt-3">Fetch Equipment</button>
         </form>
 
         <?php if ($selected_client_id): ?>
@@ -129,7 +104,7 @@ $conn->close();
                     echo "<p>No available equipment for this client.</p>";
                 }
                 ?>
-                <button type="submit" name="check_out" class="btn btn-primary mt-3" onclick="document.getElementById('check-out-form').addEventListener('submit', redirectToDashboard);">Check Out</button>
+                <button type="submit" name="check_out" class="btn btn-primary mt-3">Check Out</button>
             </form>
         <?php endif; ?>
 
@@ -139,11 +114,11 @@ $conn->close();
             </div>
         <?php endif; ?>
     </div>
+
     <footer class="footer">
-   <p>&copy; <?php echo date("Y"); ?>
-            Developed by KNLS Attachés @ May-August 2024
-        </p>
+        <p>&copy; <?php echo date("Y"); ?> <a href="https://wa.me/0758882563">Pandomi Tech Innovations</a></p>
     </footer>
+
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

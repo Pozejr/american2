@@ -10,7 +10,7 @@
         .footer {
             text-align: center;
             padding: 20px 0;
-            background-color: #b52233; /* Bootstrap's primary blue color */
+            background-color: #b52233; /* Footer background color */
             color: white;
         }
         .form-container {
@@ -79,7 +79,8 @@
     </div>
 </section>
 <footer class="footer">
-    <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+    <p>&copy; <?php echo date("Y"); ?> <a href="https://wa.me/0758882563" style="color: white; text-decoration: none;">Pandomi Tech Innovations</a></p>
 </footer>
 </body>
 </html>
+

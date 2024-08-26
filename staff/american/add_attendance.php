@@ -142,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Footer Section -->
     <footer class="footer text-center py-3" style="background-color: #b52233; color: white;">
-        <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+        <p>&copy; <?php echo date("Y"); ?> Developed by Pandomi Tech Innovations</p>
     </footer>
 
     <!-- Add Bootstrap JS (Optional) -->
@@ -190,3 +190,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </body>
 </html>
+

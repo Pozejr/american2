@@ -1,5 +1,9 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include 'db.php'; // Ensure this includes your database connection script
 
 // Check if the user is logged in and is authorized
@@ -14,10 +18,9 @@ if (isset($_POST['register_client'])) {
     $client_name = $conn->real_escape_string($_POST['client_name']);
     $phone_no = $conn->real_escape_string($_POST['phone_no']);
     $id_no = $conn->real_escape_string($_POST['id_no']);
-    $user_id = isset($_SESSION['id']) ? $conn->real_escape_string($_SESSION['id']) : null;
-
-    // Insert client into database
-    $sql = "INSERT INTO clients (name, phone_no, id_no, id) VALUES ('$client_name', '$phone_no', '$id_no', '$user_id')";
+    
+    // Insert client into database without photo
+    $sql = "INSERT INTO clients (name, phone_no, id_no) VALUES ('$client_name', '$phone_no', '$id_no')";
     if ($conn->query($sql) === TRUE) {
         echo "Client registered successfully";
         header("Location: dashboard.php");
@@ -44,7 +47,7 @@ if (isset($_POST['update_client'])) {
     $phone_no = $conn->real_escape_string($_POST['phone_no']);
     $id_no = $conn->real_escape_string($_POST['id_no']);
 
-    // Update client details
+    // Update client details without changing the photo
     $sql = "UPDATE clients SET name='$client_name', phone_no='$phone_no', id_no='$id_no' WHERE id='$client_id'";
     if ($conn->query($sql) === TRUE) {
         echo "Client updated successfully";
@@ -55,6 +58,7 @@ if (isset($_POST['update_client'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -63,10 +67,14 @@ if (isset($_POST['update_client'])) {
     <title>Client Management</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
         }
         .container {
+            flex: 1;
             margin-top: 20px;
         }
         .form-container {
@@ -76,17 +84,24 @@ if (isset($_POST['update_client'])) {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         header {
-            background-color: #2D2C8E;
+            background-color: #242f4b;
             padding: 20px;
             text-align: center;
             color: white;
         }
         footer {
-            background-color: #F48312;
-            height: 100px;
+            background-color: #b52233; /* Updated color */
+            height: 130px;
             text-align: center;
             color: white;
             padding: 20px 0;
+        }
+        footer a {
+            color: white; /* Ensure link is visible on red background */
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline; /* Underline on hover for better UX */
         }
         .row {
             display: flex;
@@ -138,8 +153,8 @@ if (isset($_POST['update_client'])) {
                         <button type="submit" name="search_client" class="btn btn-primary btn-block">Search Client</button>
                     </form>
                     <?php if (isset($client) && $client): ?>
-                        <form method="post" action="">
-                            <input type="hidden" name="client_id" value="<?php echo htmlspecialchars($client['id']); ?>">
+                        <form method="post" action="" class="mt-4">
+                            <input type="hidden" name="client_id" value="<?php echo $client['id']; ?>">
                             <div class="form-group">
                                 <label for="client_name">Client Name:</label>
                                 <input type="text" class="form-control" id="client_name" name="client_name" value="<?php echo htmlspecialchars($client['name']); ?>" required>
@@ -152,20 +167,18 @@ if (isset($_POST['update_client'])) {
                                 <label for="id_no">ID Number:</label>
                                 <input type="text" class="form-control" id="id_no" name="id_no" value="<?php echo htmlspecialchars($client['id_no']); ?>" required>
                             </div>
-                            <button type="submit" name="update_client" class="btn btn-success btn-block">Update Client</button>
+                            <button type="submit" name="update_client" class="btn btn-primary btn-block">Update Client</button>
                         </form>
-                    <?php elseif (isset($client) && !$client): ?>
-                        <p class="text-danger">No client found with that name.</p>
+                    <?php elseif (isset($search_name)): ?>
+                        <p class="text-danger text-center">No client found with that name.</p>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
     <footer>
-        <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+        <p>© 2024 <a href="https://wa.me/0758882563">Pandomi Tech Innovations</a>.</p>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+

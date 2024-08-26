@@ -28,6 +28,19 @@
             background-color: #242f4b;
             color: white;
         }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #b52233;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -90,8 +103,9 @@
         }
     </script>
 </section>
-<footer class="footer" style="background-color: #b52233;">
-    <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+<footer class="footer">
+    <p>&copy; <?php echo date("Y"); ?> <a href="https://wa.me/0758882563">Pandomi Tech Innovations</a></p>
 </footer>
 </body>
 </html>
+
