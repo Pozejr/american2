@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Computer</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,11 +36,25 @@
         .btn-primary {
             width: 100%;
         }
+        .footer {
+            background-color: #b52233; /* Footer color */
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 <header style="background-color: #2D2C8E; text-align: center; color: white;">
-<h1>American Corner Management System</h1>
+    <h1>American Corner Management System</h1>
 </header>
 <section>
     <div class="container">
@@ -59,8 +72,16 @@
         </form>
     </div>
 </section>
-<footer>
-
+<footer class="footer">
+    <p>&copy; <span id="year"></span> Developed by <a href="https://wa.me/+254758882563" target="_blank">Pandomi Tech Innovations</a></p>
 </footer>
+
+<script>
+    // Get the current year
+    var currentYear = new Date().getFullYear();
+    // Set the year in the HTML
+    document.getElementById('year').textContent = currentYear;
+</script>
 </body>
 </html>
+

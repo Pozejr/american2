@@ -2,8 +2,8 @@
 require_once('tcpdf/tcpdf.php'); // Include the TCPDF library
 
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "knls";
+$password = "Knls_2020";
 $dbname = "client_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -17,17 +17,35 @@ $dataCheckedInOnly = [];
 $dataNotCheckedIn = [];
 $date = "";
 $fetchType = "checked_in"; // Default fetch type
+$dateRange = "day"; // Default date range
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date = $_POST['date'] ?? '';
-    $fetchType = $_POST['fetch_type'] ?? 'checked_in'; // Get the selected fetch type
+    $fetchType = $_POST['fetch_type'] ?? 'checked_in';
+    $dateRange = $_POST['date_range'] ?? 'day'; // Get the selected date range
+
+    // Calculate date range
+    switch ($dateRange) {
+        case 'week':
+            $startDate = date('Y-m-d', strtotime('monday this week', strtotime($date)));
+            $endDate = date('Y-m-d', strtotime('sunday this week', strtotime($date)));
+            break;
+        case 'month':
+            $startDate = date('Y-m-01', strtotime($date));
+            $endDate = date('Y-m-t', strtotime($date));
+            break;
+        case 'day':
+        default:
+            $startDate = $endDate = $date;
+            break;
+    }
 
     if ($date) {
         if ($fetchType === 'checked_in') {
             // Fetch data for clients who checked in with a computer
-            $sql = "SELECT id, comp_name, client_name, check_in_time, check_out_time FROM computer_check_in WHERE DATE(check_in_time) = ?";
+            $sql = "SELECT id, comp_name, client_name, check_in_time, check_out_time FROM computer_check_in WHERE DATE(check_in_time) BETWEEN ? AND ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $date);
+            $stmt->bind_param("ss", $startDate, $endDate);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -37,13 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $stmt->close();
         } elseif ($fetchType === 'checked_in_only') {
-            // Fetch data for clients who checked in without a computer (including those with blank comp_name)
+            // Fetch data for clients who checked in without a computer
             $sql = "SELECT c.id, c.name AS client_name, ci.check_in_time 
                     FROM clients c
-                    JOIN computer_check_in ci ON c.id = ci.client_name AND DATE(ci.check_in_time) = ?
+                    JOIN computer_check_in ci ON c.id = ci.client_name AND DATE(ci.check_in_time) BETWEEN ? AND ?
                     WHERE ci.comp_name IS NULL OR ci.comp_name = ''";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $date);
+            $stmt->bind_param("ss", $startDate, $endDate);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -56,10 +74,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Fetch data for clients who did not check in with a computer
             $sql = "SELECT c.id, c.name AS client_name 
                     FROM clients c 
-                    LEFT JOIN computer_check_in ci ON c.id = ci.client_name AND DATE(ci.check_in_time) = ? 
+                    LEFT JOIN computer_check_in ci ON c.id = ci.client_name AND DATE(ci.check_in_time) BETWEEN ? AND ? 
                     WHERE ci.id IS NULL";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $date);
+            $stmt->bind_param("ss", $startDate, $endDate);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -102,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Prepare HTML content for the PDF
             if ($fetchType === 'checked_in') {
-                $html = '<h1>Check-in and Check-out Records for ' . htmlspecialchars($date) . '</h1>';
+                $html = '<h1>Check-in and Check-out Records from ' . htmlspecialchars($startDate) . ' to ' . htmlspecialchars($endDate) . '</h1>';
                 $html .= '<table border="1" cellpadding="4">';
                 $html .= '<thead><tr><th>ID</th><th>Computer Name</th><th>Client Name</th><th>Check-in Time</th><th>Check-out Time</th></tr></thead><tbody>';
 
@@ -118,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $html .= '</tbody></table>';
             } elseif ($fetchType === 'checked_in_only') {
-                $html = '<h1>Clients Checked In (Without Computers) for ' . htmlspecialchars($date) . '</h1>';
+                $html = '<h1>Clients Checked In (Without Computers) from ' . htmlspecialchars($startDate) . ' to ' . htmlspecialchars($endDate) . '</h1>';
                 $html .= '<table border="1" cellpadding="4">';
                 $html .= '<thead><tr><th>ID</th><th>Client Name</th><th>Check-in Time</th></tr></thead><tbody>';
 
@@ -132,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $html .= '</tbody></table>';
             } else {
-                $html = '<h1>Clients Who Did Not Check-in for ' . htmlspecialchars($date) . '</h1>';
+                $html = '<h1>Clients Who Did Not Check-in from ' . htmlspecialchars($startDate) . ' to ' . htmlspecialchars($endDate) . '</h1>';
                 $html .= '<table border="1" cellpadding="4">';
                 $html .= '<thead><tr><th>ID</th><th>Client Name</th></tr></thead><tbody>';
 
@@ -150,7 +168,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $pdf->writeHTML($html, true, false, true, false, '');
 
             // Output PDF document
-            $pdf->Output('check_in_out_records_' . $date . '.pdf', 'D');
+            $pdf->Output('check_in_out_records_' . $startDate . '_to_' . $endDate . '.pdf', 'D');
             exit; // Ensure no further output is sent
         }
     }
@@ -169,13 +187,13 @@ $conn->close();
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .header {
-            background-color: #2D2C8E;
+            background-color: #242f4b;
             color: white;
             padding: 10px 0;
             text-align: center;
         }
         .footer {
-            background-color: #F48312;
+            background-color: #b52233;
             color: white;
             padding: 10px 0;
             text-align: center;
@@ -186,7 +204,7 @@ $conn->close();
     </style>
 </head>
 <body>
-    <header style="background-color: #2D2C8E; text-align: center; color: white;">
+    <header class="header">
         <h1>American Corner Management System</h1>
         <div class="d-flex justify-content-center flex-wrap">
             <a href="admin.php" class="btn btn-light mx-2 my-1">Home</a>
@@ -202,9 +220,17 @@ $conn->close();
                 <div class="form-group">
                     <label for="fetch_type">Fetch Type:</label>
                     <select id="fetch_type" name="fetch_type" class="form-control">
-                    <option value="checked_in" <?php echo ($fetchType === 'checked_in') ? 'selected' : ''; ?>>Checked In (With Computers)</option>
+                        <option value="checked_in" <?php echo ($fetchType === 'checked_in') ? 'selected' : ''; ?>>Checked In (With Computers)</option>
                         <option value="checked_in_only" <?php echo ($fetchType === 'checked_in_only') ? 'selected' : ''; ?>>Checked In Only (Without Computers)</option>
                         <option value="not_checked_in" <?php echo ($fetchType === 'not_checked_in') ? 'selected' : ''; ?>>Not Checked In</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date_range">Date Range:</label>
+                    <select id="date_range" name="date_range" class="form-control">
+                        <option value="day" <?php echo ($dateRange === 'day') ? 'selected' : ''; ?>>Day</option>
+                        <option value="week" <?php echo ($dateRange === 'week') ? 'selected' : ''; ?>>Week</option>
+                        <option value="month" <?php echo ($dateRange === 'month') ? 'selected' : ''; ?>>Month</option>
                     </select>
                 </div>
                 <button type="submit" name="fetch_data" class="btn btn-primary">Fetch Data</button>
@@ -254,12 +280,19 @@ $conn->close();
             </tbody>
         </table>
     </div>
-    <div class="footer">
-        <p>&copy; Developed by KNLS Attachés @ May-August 2024</p>
-    </div>
+    <footer class="footer">
+ <p>&copy; <span id="year"></span> Developed by <a href="https://wa.me/+254758882563" target="_blank">Pandomi Tech Innovations</a></p>
+    </footer>
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Get the current year
+        var currentYear = new Date().getFullYear();
+        // Set the year in the HTML
+        document.getElementById('year').textContent = currentYear;
+    </script>
 </body>
 </html>
+

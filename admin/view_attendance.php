@@ -170,6 +170,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         form {
             width: 900px;
         }
+        .footer {
+            background-color: #b52233; /* Footer color */
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -277,8 +291,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </section>
 
     <!-- Footer Section -->
-    <footer class="footer text-center py-3" style="background-color: #b52233; color: white;">
-        <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+    <footer class="footer">
+        <p>&copy; <span id="year"></span> Developed by <a href="https://wa.me/0758882563" target="_blank">Pandomi Tech Innovations</a></p>
     </footer>
 
     <!-- Add Bootstrap JS (Optional) -->
@@ -317,6 +331,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 startView: 0,
                 minViewMode: 0
             });
+
+            // Get the current year
+            var currentYear = new Date().getFullYear();
+            // Set the year in the HTML
+            document.getElementById('year').textContent = currentYear;
         });
     </script>
 </body>

@@ -8,6 +8,58 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['role'] != 'admin') {
     exit;
 }
 
+// Process user deletion request
+if (isset($_POST['delete_user'])) {
+    $user_id = intval($_POST['user_id']);
+    // Delete the user from the database
+    $sql_delete_user = "DELETE FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql_delete_user);
+    $stmt->bind_param('i', $user_id);
+    if ($stmt->execute()) {
+        echo "<script>alert('User deleted successfully.'); window.location.href='admin.php';</script>";
+    } else {
+        echo "<script>alert('Error deleting user.'); window.location.href='admin.php';</script>";
+    }
+    $stmt->close();
+}
+
+// Process user addition
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['confirm_password'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+    $role = $_POST['role'];
+    
+    // Validate passwords
+    if ($password !== $confirm_password) {
+        echo "<script>alert('Passwords do not match.'); window.location.href='admin.php';</script>";
+        exit;
+    }
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    // Handle profile picture upload
+    $profile_pic = null;
+    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'uploads/';
+        $profile_pic = $upload_dir . basename($_FILES['profile_pic']['name']);
+        move_uploaded_file($_FILES['profile_pic']['tmp_name'], $profile_pic);
+    }
+
+    // Insert new user into the database
+    $sql_add_user = "INSERT INTO users (username, email, password, role, profile_pic) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql_add_user);
+    $stmt->bind_param('sssss', $username, $email, $hashed_password, $role, $profile_pic);
+    if ($stmt->execute()) {
+        echo "<script>alert('User added successfully.'); window.location.href='admin.php';</script>";
+    } else {
+        echo "<script>alert('Error adding user.'); window.location.href='admin.php';</script>";
+    }
+    $stmt->close();
+}
+
 // Fetch logged-in users with additional details including login and logout times
 $sql_sessions = "SELECT us.id, us.username, us.login_time, us.logout_time, u.email, u.role 
                   FROM user_sessions us
@@ -25,7 +77,7 @@ $result_clients = $conn->query($sql_clients);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,10 +88,26 @@ $result_clients = $conn->query($sql_clients);
             font-family: Arial, sans-serif;
         }
         header {
-            background-color: #2D2C8E;
+            background-color: #242f4b;
             color: white;
             padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        header .logo {
+            background-image: url('images/images.jpeg'); /* Adjust the path to your logo image */
+            background-size: cover;
+            background-position: center;
+            height: 100px; /* Adjust as needed */
+            width: 100px; /* Adjust as needed */
+            border-radius: 50%;
+            display: inline-block;
+        }
+        header .header-text {
             text-align: center;
+            flex: 1;
         }
         .table-container {
             overflow-x: auto;
@@ -50,7 +118,7 @@ $result_clients = $conn->query($sql_clients);
             margin-top: 20px;
         }
         footer {
-            background-color: #F48312;
+            background-color: #b52233;
             height: 130px;
             text-align: center;
             color: white;
@@ -78,12 +146,23 @@ $result_clients = $conn->query($sql_clients);
                 confirmPassword.type = "password";
             }
         }
+        // Get the current year for the footer
+        function updateYear() {
+            var currentYear = new Date().getFullYear();
+            document.getElementById('year').textContent = currentYear;
+        }
+        window.onload = updateYear;
     </script>
 </head>
 <body>
-    <header class="text-white text-center py-3">
-        <h1>American Corner Management System</h1>
-        <h2>Admin Panel</h2>
+    <header>
+        <a href="/index.php">
+            <div class="logo"></div>
+        </a>
+        <div class="header-text">
+            <h1>American Corner Management System</h1>
+            <h2>Admin Panel</h2>
+        </div>
         <div class="action-links">
             <a href="register_computer.php" class="btn btn-primary">Assets</a>
             <a href="add_program.php" class="btn btn-primary">Program</a>
@@ -153,9 +232,9 @@ $result_clients = $conn->query($sql_clients);
                     </div>
                 </div>
 
-                <!-- Manage Staff -->
+                <!-- Manage Users -->
                 <div class="col-md-6">
-                    <h2>Manage Staff</h2>
+                    <h2>Manage Users</h2>
                     <div class="table-container mb-4">
                         <table class="table table-bordered">
                             <thead class="thead-light">
@@ -190,15 +269,15 @@ $result_clients = $conn->query($sql_clients);
                         </table>
                     </div>
                     <div class="form-container1">
-                        <h2>Add New Staff</h2>
-                        <form method="post" action="">
+                        <h2>Add New User</h2>
+                        <form method="post" action="" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="username">Username:</label>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email:</label>
-                                <input type="text" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" required>
                             </div>
                             <div class="form-group">
                                 <label for="password">Password:</label>
@@ -220,10 +299,10 @@ $result_clients = $conn->query($sql_clients);
                                 <label for="role">Role:</label>
                                 <select class="form-control" id="role" name="role">
                                     <option value="admin">Admin</option>
-                                    <option value="staff">Staff</option>
+                                    <option value="user">User</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">Add Staff</button>
+                            <button type="submit" class="btn btn-primary">Add User</button>
                         </form>
                     </div>
                 </div>
@@ -289,7 +368,16 @@ $result_clients = $conn->query($sql_clients);
         </div>
     </section>
     <footer>
-        <p>&copy; 2024 American Corner Management System</p>
+        <p>&copy; <span id="year"></span> Developed by Pandomi Tech Innovations</p>
     </footer>
+    <script>
+        // Get the current year for the footer
+        function updateYear() {
+            var currentYear = new Date().getFullYear();
+            document.getElementById('year').textContent = currentYear;
+        }
+        window.onload = updateYear;
+    </script>
 </body>
 </html>
+
